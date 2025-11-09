@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
-  "repository": "ulpi-io/agent-library",
-  "baseUrl": "https://raw.githubusercontent.com/ulpi-io/agent-library/refs/heads/main/templates",
-  "localBasePath": ".ulpi/agents",
+  "repository": "ulpi-io/agent-templates",
+  "baseUrl": "https://raw.githubusercontent.com/ulpi-io/agent-templates/main",
+  "localBasePath": ".ulpi",
   "agents": {
     "nodejs-cli-senior-engineer": {
       "path": ".ulpi/agents/engineering/nodejs-cli-senior-engineer.yaml"
@@ -15,6 +15,14 @@
     },
     "docker-senior-engineer": {
       "path": ".ulpi/agents/devops/docker-senior-engineer.yaml"
+    },
+    "product-manager": {
+      "path": ".ulpi/agents/planning/product-manager.yaml"
+    }
+  },
+  "workflows": {
+    "nodejs-with-pm": {
+      "path": ".ulpi/workflows/nodejs-with-pm.yaml"
     }
   }
 }
