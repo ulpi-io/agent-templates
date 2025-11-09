@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "-u",
+        "http://localhost:9222"
+      ]
+    },
+    "ulpi-coordination": {
+      "command": "ulpi-mcp",
+      "args": [
+        "coordination"
+      ],
+      "env": {
+        "ULPI_TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIwMTlhMzg1My04YzgxLTczYWItYWY5Ny1jNWM0NzM0NzZmN2EiLCJqdGkiOiJjY2ZhODQ3YzBiOTRlMzFjODU3ZTdkNjg0ZjY5YjM4ZDVlMWY1ZTk3ODIxNzhjMmEzYjY5ZDA5NThjODE1MTI3OTUzYWZmOTEwNzE3YmZmNyIsImlhdCI6MTc2MjA2MTE4OC41MzQyMiwibmJmIjoxNzYyMDYxMTg4LjUzNDIyMSwiZXhwIjoxNzY0NjUzMTg4LjUzMTc2Nywic3ViIjoiMiIsInNjb3BlcyI6WyJza2lsbHMiLCJjb29yZGluYXRpb24iLCJtZW1vcnkiLCJkb2N1bWVudGF0aW9uIl19.RskrJcFrMxZ6iwSqfU4tbBk34aAKgQGtYA-OB84n4UgEV7KE3LLepWTpr5pvxTuPj6CnW1gNp49E3Kv-81Qnrt09zjyvSB-4FeXInbsbfxBWIybqwSpDu9nnU9IFBiGRVScIT1jHv9ml2nrLQJOXSNfKG5DkX5_v5ksRPdqtLb2nM7nKd0KP8fcjHpA6y8d6n3s4H06NvZVutfAippYyJmaeXIfLbikwMltrhfnvwPPJCX28g91_ynTXpHOLI6yP6vP0H83HVY1d75W-8g4vo8Gt8W80SZZr7mMYB6Nx3QjRvNW54pDaFkCuBM-kxBxQAWonCV8mr2NhDaZM5dQwm9ilCnTVs5tPnB-SFnHgcxaUvsun01ez7PGro1bHHDzxNqvvSa0gT3l4lFAgp6EbMVWnYhkaQbeaUGpTRzknggWIVIypVmhytC8s_nrxLuy3JssOvkpsdKk3fdgOZG52NWUrPAtc4hqTtvrZH2ecsPetgz6swE190K9bkQyFsQfd82uJeqpZIt54JVpozkSzA6p16S_msQ9WfOB4_QlgWFFgg198kbgGkQopUF7shQWkOdAyaAA68lvsZ2_B5L8QjLg1JCTVlmpItGvDjfB6KwwHCWIkhZUjqbKTsW-BtLH-Y098rxucyErXuEm958rrohJUWAW50omxmPOIFGp5J1M",
+        "ULPI_PROJECT_ID": "3",
+        "ULPI_REPOSITORY_ID": "1",
+        "ULPI_API_URL": "http://localhost"
+      }
+    },
+    "ulpi-memory": {
+      "command": "ulpi-mcp",
+      "args": [
+        "memory"
+      ],
+      "env": {
+        "ULPI_TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIwMTlhMzg1My04YzgxLTczYWItYWY5Ny1jNWM0NzM0NzZmN2EiLCJqdGkiOiJjY2ZhODQ3YzBiOTRlMzFjODU3ZTdkNjg0ZjY5YjM4ZDVlMWY1ZTk3ODIxNzhjMmEzYjY5ZDA5NThjODE1MTI3OTUzYWZmOTEwNzE3YmZmNyIsImlhdCI6MTc2MjA2MTE4OC41MzQyMiwibmJmIjoxNzYyMDYxMTg4LjUzNDIyMSwiZXhwIjoxNzY0NjUzMTg4LjUzMTc2Nywic3ViIjoiMiIsInNjb3BlcyI6WyJza2lsbHMiLCJjb29yZGluYXRpb24iLCJtZW1vcnkiLCJkb2N1bWVudGF0aW9uIl19.RskrJcFrMxZ6iwSqfU4tbBk34aAKgQGtYA-OB84n4UgEV7KE3LLepWTpr5pvxTuPj6CnW1gNp49E3Kv-81Qnrt09zjyvSB-4FeXInbsbfxBWIybqwSpDu9nnU9IFBiGRVScIT1jHv9ml2nrLQJOXSNfKG5DkX5_v5ksRPdqtLb2nM7nKd0KP8fcjHpA6y8d6n3s4H06NvZVutfAippYyJmaeXIfLbikwMltrhfnvwPPJCX28g91_ynTXpHOLI6yP6vP0H83HVY1d75W-8g4vo8Gt8W80SZZr7mMYB6Nx3QjRvNW54pDaFkCuBM-kxBxQAWonCV8mr2NhDaZM5dQwm9ilCnTVs5tPnB-SFnHgcxaUvsun01ez7PGro1bHHDzxNqvvSa0gT3l4lFAgp6EbMVWnYhkaQbeaUGpTRzknggWIVIypVmhytC8s_nrxLuy3JssOvkpsdKk3fdgOZG52NWUrPAtc4hqTtvrZH2ecsPetgz6swE190K9bkQyFsQfd82uJeqpZIt54JVpozkSzA6p16S_msQ9WfOB4_QlgWFFgg198kbgGkQopUF7shQWkOdAyaAA68lvsZ2_B5L8QjLg1JCTVlmpItGvDjfB6KwwHCWIkhZUjqbKTsW-BtLH-Y098rxucyErXuEm958rrohJUWAW50omxmPOIFGp5J1M",
+        "ULPI_PROJECT_ID": "3",
+        "ULPI_REPOSITORY_ID": "1",
+        "ULPI_API_URL": "http://localhost"
+      }
+    }
+  }
+}

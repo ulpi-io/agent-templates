@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "repository": "ulpi-io/agent-library",
+  "baseUrl": "https://raw.githubusercontent.com/ulpi-io/agent-library/refs/heads/main/templates",
+  "localBasePath": ".ulpi/agents",
+  "agents": {
+    "nodejs-cli-senior-engineer": {
+      "path": ".ulpi/agents/engineering/nodejs-cli-senior-engineer.yaml"
+    },
+    "express-senior-engineer": {
+      "path": ".ulpi/agents/engineering/express-senior-engineer.yaml"
+    },
+    "aws-senior-engineer": {
+      "path": ".ulpi/agents/devops/aws-senior-engineer.yaml"
+    },
+    "docker-senior-engineer": {
+      "path": ".ulpi/agents/devops/docker-senior-engineer.yaml"
+    }
+  }
+}

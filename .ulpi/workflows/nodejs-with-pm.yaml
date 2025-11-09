@@ -1,0 +1,439 @@
+workflow:
+  id: nodejs-with-pm
+  name: Node.js Development with Product Manager
+  description: PM breaks down feature into tasks, developer implements one by one
+  version: 1.0.0
+
+  inputs:
+    - name: feature_request
+      type: text
+      required: true
+      description: High-level feature request or user story
+    - name: tech_stack
+      type: text
+      required: false
+      description: Specific tech stack requirements (Express, Fastify, database, etc.)
+      default: Express with PostgreSQL
+    - name: project_name
+      type: text
+      required: false
+      description: Project name for task folder
+      default: feature
+
+  stages:
+    # Stage 1: Product Manager - Break down into tasks AND write to disk
+    - id: planning
+      name: Product Planning & Create Task Files
+      agent: product-manager
+      task: |
+        Break down this feature request into individual development tasks AND write them to disk.
+
+        Feature Request:
+        {{ inputs.feature_request }}
+
+        Tech Stack: {{ inputs.tech_stack }}
+
+        ## PART 1: Create Task Breakdown
+
+        Create a task breakdown with:
+
+        1. **Project Overview**
+           - Feature summary
+           - Success criteria
+           - Technical approach
+
+        2. **Task List** - Break into granular tasks:
+           For each task, specify:
+           - **Task ID**: Sequential number (001, 002, 003, etc.)
+           - **Category**: backend, database, testing, documentation
+           - **Priority**: high, medium, low
+           - **Title**: Clear, concise task title
+           - **Description**: What needs to be done
+           - **Acceptance Criteria**: How to verify completion
+           - **Dependencies**: Which task IDs must complete first (if any)
+           - **Estimated Hours**: Time estimate
+           - **Files to Create**: Expected output files
+
+        ## PART 2: Write Task Files to Disk
+
+        Create directory structure:
+        .ulpi/tasks/[YYYYMMDD_HHMMSS]_{{ inputs.project_name }}/
+        ├── manifest.yaml
+        ├── status.yaml
+        ├── 001_[category]_[description].task.md
+        ├── 002_[category]_[description].task.md
+        └── ...
+
+        For each task, create a Markdown file with this structure:
+
+        ```markdown
+        # Task 001: Task Title
+
+        **Category**: backend
+        **Priority**: high
+        **Estimated Hours**: 2
+        **Dependencies**: none (or: 001, 002)
+        **Assigned Agent**: nodejs-api-engineer
+
+        ## Description
+
+        Detailed description of what to implement.
+        Be specific and clear.
+
+        ## Requirements
+
+        - Requirement 1
+        - Requirement 2
+        - Requirement 3
+
+        ## Acceptance Criteria
+
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+
+        ## Output Files
+
+        - `path/to/file1.ts`
+        - `path/to/file2.ts`
+
+        ## Technical Notes
+
+        Any additional technical context or constraints.
+        ```
+
+        Write the manifest.yaml file (YAML format):
+        ```yaml
+        manifest:
+          project: {{ inputs.project_name }}
+          created: [timestamp]
+          created_by: product-manager
+          source: "{{ inputs.feature_request }}"
+          summary:
+            total_tasks: [count]
+            categories:
+              backend: [count]
+              database: [count]
+              testing: [count]
+              documentation: [count]
+          phases:
+            - phase: 1_foundation
+              tasks: ["001", "002"]
+            - phase: 2_implementation
+              tasks: ["003", "004", "005"]
+            - phase: 3_testing
+              tasks: ["006", "007"]
+          execution_strategy:
+            mode: sequential
+            max_parallel: 1
+        ```
+
+        Write status.yaml to track task completion (YAML format):
+        ```yaml
+        status:
+          project: {{ inputs.project_name }}
+          created: [timestamp]
+          last_updated: [timestamp]
+          total_tasks: [count]
+          completed_tasks: 0
+          pending_tasks: [count]
+          failed_tasks: 0
+          tasks:
+            - id: "001"
+              status: pending  # pending | in_progress | completed | failed
+              started_at: null
+              completed_at: null
+              files_created: []
+              issues: []
+            - id: "002"
+              status: pending
+              started_at: null
+              completed_at: null
+              files_created: []
+              issues: []
+            # ... for each task
+        ```
+
+        Output:
+        - The full directory path where tasks were created
+        - Summary of tasks created
+
+        **PM handoff complete. Tasks ready for developer.**
+
+        Be thorough and granular. Each task should be small enough to implement in one session.
+      output: task_directory
+
+    # Stage 2: Initialize loop control variable
+    - id: init_loop
+      name: Initialize Loop Control
+      agent: product-manager
+      task: |
+        Initialize the task execution loop.
+
+        Simply output the word: CONTINUE
+
+        This signals that the loop should start executing tasks.
+      output: loop_continue
+
+    # Stage 3: Execute All Tasks with Review Loop (using workflow repeat)
+    - id: execute_all_tasks
+      name: Execute All Tasks with Quality Gates
+      repeat:
+        # Check if we should continue - exit when check_remaining_tasks outputs STOP
+        # Use maxIterations as safety limit
+        while: "outputs_loop_continue != 'STOP'"
+        maxIterations: 50
+        stages:
+          # Sub-stage 2a: Get next pending task
+          - id: get_next_task
+            name: Get Next Pending Task
+            agent: product-manager
+            task: |
+              Find the next pending task from the task directory.
+
+              Task Directory: {{ outputs.task_directory }}
+
+              Steps:
+              1. Read status.yaml from the task directory
+              2. Find the first task with status: "pending" that has all dependencies completed
+              3. Output ONLY the task ID and filename
+
+              If no pending tasks remain, output exactly: "NONE"
+
+              Output format (if task found):
+              Task ID: 001
+              Task File: 001_backend_setup.task.md
+
+              Output format (if no tasks):
+              NONE
+            output: next_task_info
+
+          # Sub-stage 2b: Execute the single task
+          - id: execute_single_task
+            name: Execute Single Task
+            agent: nodejs-api-engineer
+            task: |
+              Execute ONE task from the task directory.
+
+              Task Directory: {{ outputs.task_directory }}
+              Next Task Info: {{ outputs.next_task_info }}
+              Tech Stack: {{ inputs.tech_stack }}
+
+              **IMPORTANT:** Check if next task info says "NONE". If so, output "NO_TASK" and skip execution.
+
+              Otherwise, process as follows:
+
+              1. Parse the task ID and filename from next task info
+
+              2. **UPDATE status.yaml**: Mark the task as "in_progress"
+                 - Read {{ outputs.task_directory }}/status.yaml
+                 - Find the task by ID
+                 - Set status: "in_progress"
+                 - Set started_at: current timestamp
+                 - Save the file
+
+              3. Read the task file from the task directory
+
+              4. Parse task details (Title, Requirements, Acceptance Criteria, Dependencies)
+
+              5. Verify all dependencies are completed (check status.yaml)
+
+              6. Implement the task:
+                 - Create all files specified
+                 - Use proper TypeScript types
+                 - Add input validation
+                 - Include error handling
+                 - Write JSDoc comments
+                 - Follow Node.js best practices
+
+              7. Self-review against acceptance criteria
+
+              8. If issues found, fix them and re-review (repeat up to 3 times)
+
+              9. **UPDATE status.yaml**: Mark the task as "completed"
+                 - Read {{ outputs.task_directory }}/status.yaml
+                 - Find the task by ID
+                 - Set status: "completed"
+                 - Set completed_at: current timestamp
+                 - Set files_created: array of files you created
+                 - Save the file
+
+              **CRITICAL STATUS.YAML UPDATES:**
+              - ALWAYS update status.yaml at steps 2 and 9
+              - Use exact YAML format from the file
+              - Preserve all other fields
+              - Ensure timestamps are ISO format
+
+              **Important:**
+              - Implement ONLY what this task file specifies
+              - Ensure all acceptance criteria are met
+              - Do NOT move to the next task - workflow will handle that
+
+              Output a brief summary:
+              - Task ID completed (or NO_TASK if none available)
+              - Files created/modified
+              - Confirmation that status.yaml was updated
+            output: task_execution_result
+
+          # Sub-stage 2c: Check if we should continue the loop
+          - id: check_remaining_tasks
+            name: Check Remaining Tasks
+            agent: product-manager
+            task: |
+              Check if there are more pending tasks to determine if loop should continue.
+
+              Task Directory: {{ outputs.task_directory }}
+
+              Steps:
+              1. Read status.yaml from the task directory
+              2. Count tasks with status: "pending"
+              3. Output EXACTLY one of these two words: CONTINUE or STOP
+
+              Output Rules:
+              - If there are 1 or more pending tasks, output: CONTINUE
+              - If there are 0 pending tasks, output: STOP
+
+              Output ONLY the word, nothing else. Examples:
+
+              If 5 pending tasks remain:
+              CONTINUE
+
+              If 0 pending tasks remain:
+              STOP
+
+              **CRITICAL: Output must be exactly "CONTINUE" or "STOP" with no extra text!**
+            output: loop_continue
+
+    # Stage 4: Integration & Testing
+    - id: integration_testing
+      name: Integration Testing
+      agent: nodejs-automation-engineer
+      task: |
+        All tasks completed. Create integration tests.
+
+        Task Directory: {{ outputs.task_directory }}
+        Implementation Summary: Review all completed tasks in {{ outputs.task_directory }}/status.yaml
+
+        Review the completed tasks in the task directory and implementation summary.
+
+        Create:
+        - Integration test suite covering all implemented features
+        - End-to-end tests for main flows
+        - Test database setup/teardown scripts
+        - Test fixtures and mock data
+        - Tests for API endpoints created
+        - Tests for business logic implemented
+
+        Use Jest and Supertest for API testing.
+        Test all implemented functionality together to ensure integration works.
+
+        Ensure tests:
+        - Cover happy paths and error cases
+        - Test authentication/authorization if implemented
+        - Test data validation
+        - Are independent and can run in any order
+        - Clean up after themselves
+      output: integration_tests
+
+    # Stage 5: Documentation
+    - id: documentation
+      name: Complete Documentation
+      agent: nodejs-documentation-engineer
+      task: |
+        Create comprehensive documentation for the completed feature:
+
+        Original Request:
+        {{ inputs.feature_request }}
+
+        Task Directory: {{ outputs.task_directory }}
+
+        Implementation Summary:
+        Review all completed tasks in {{ outputs.task_directory }}/status.yaml
+
+        Tests Created:
+        {{ outputs.integration_tests }}
+
+        Create the following documentation:
+
+        1. **README.md** - Project overview
+           - What this feature does
+           - Prerequisites
+           - Installation steps
+           - Quick start guide
+           - Environment variables needed
+
+        2. **API.md** - Complete API documentation
+           - All endpoints with request/response examples
+           - Authentication requirements
+           - Error responses
+           - Rate limits (if applicable)
+
+        3. **ARCHITECTURE.md** - Technical design
+           - Project structure
+           - Design decisions
+           - Data models
+           - Tech stack used
+
+        4. **TESTING.md** - Testing guide
+           - How to run tests
+           - Test coverage
+           - Writing new tests
+           - CI/CD information
+
+        5. **TASKS.md** - Development summary
+           - List of completed tasks from task directory
+           - Features implemented
+           - Known limitations
+           - Future improvements
+
+        Include:
+        - Code examples with syntax highlighting
+        - Clear, step-by-step instructions
+        - Links between related documentation
+        - Diagrams where helpful (ASCII or Mermaid)
+      output: documentation
+
+  onCompletion:
+    summary: |
+      ✅ Feature development completed successfully!
+
+      ## Workflow Stages Completed:
+
+      1. ✓ **Product Planning & Task Creation**
+         - Feature broken down into granular tasks
+         - Task files written to: {{ outputs.task_directory }}
+         - manifest.yaml and status.yaml created
+
+      2. ✓ **Loop Initialization**
+         - Loop control variable set to CONTINUE
+
+      3. ✓ **Task Execution with Quality Gates** (Workflow Repeat Loop)
+         - All tasks implemented iteratively (one task per iteration)
+         - Dependencies verified before each task
+         - Code reviewed against acceptance criteria
+         - Issues fixed iteratively
+         - Loop automatically exits when all tasks completed
+
+      4. ✓ **Integration Testing**
+         - Test suite created
+         - End-to-end tests for main flows
+         - Database setup/teardown implemented
+
+      5. ✓ **Documentation**
+         - README, API, ARCHITECTURE, TESTING, TASKS docs created
+         - Code examples and clear instructions included
+
+      ## Next Steps:
+
+      📁 Review task breakdown: {{ outputs.task_directory }}
+      🧪 Run tests: `npm test`
+      🚀 Start development server: `npm run dev`
+      📖 Read documentation in project root
+
+      ## Summary:
+
+      Total Tasks: See {{ outputs.task_directory }}/status.yaml
+      Tests: {{ outputs.integration_tests }}
+
+      All features implemented, tested, and documented!
+    notify: true
